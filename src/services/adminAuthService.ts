@@ -4,9 +4,9 @@ import type { AdminProfile } from '../types/admin'
 
 const REQUEST_TIMEOUT_MS = 12000
 
-function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
-  return Promise.race([
-    promise,
+function withTimeout<T>(promise: PromiseLike<T>, label: string): Promise<T> {
+  return Promise.race<T>([
+    Promise.resolve(promise),
     new Promise<T>((_, reject) => {
       globalThis.setTimeout(() => {
         reject(new Error(`${label} demorou demais para responder.`))

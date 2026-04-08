@@ -4,15 +4,25 @@ import { getMonthKey } from '../utils/access'
 
 const REQUEST_TIMEOUT_MS = 12000
 
-function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
-  return Promise.race([
-    promise,
+function withTimeout<T>(promise: PromiseLike<T>, label: string): Promise<T> {
+  return Promise.race<T>([
+    Promise.resolve(promise),
     new Promise<T>((_, reject) => {
       globalThis.setTimeout(() => {
         reject(new Error(`${label} demorou demais para responder.`))
       }, REQUEST_TIMEOUT_MS)
     }),
   ])
+}
+
+interface SupabaseRow<T> {
+  data: T[] | null
+  error: { code?: string; message?: string } | null
+}
+
+interface SupabaseSingleRow<T> {
+  data: T | null
+  error: { code?: string; message?: string } | null
 }
 
 export async function fetchCategories(): Promise<Category[]> {
@@ -23,13 +33,13 @@ export async function fetchCategories(): Promise<Category[]> {
   const { data, error } = await withTimeout(
     supabase.from('categories').select('*').order('label', { ascending: true }),
     'Carregamento de categorias',
-  )
+  ) as SupabaseRow<Category>
 
   if (error) {
     throw error
   }
 
-  return (data ?? []).map((category) => ({
+  return (data ?? []).map((category: Category) => ({
     id: category.id,
     slug: category.slug,
     label: category.label,
@@ -49,13 +59,13 @@ export async function fetchEstablishments(): Promise<Establishment[]> {
       .eq('active', true)
       .order('name', { ascending: true }),
     'Carregamento de estabelecimentos',
-  )
+  ) as SupabaseRow<Establishment>
 
   if (error) {
     throw error
   }
 
-  return (data ?? []).map((establishment) => ({
+  return (data ?? []).map((establishment: Establishment) => ({
     id: establishment.id,
     slug: establishment.slug,
     name: establishment.name,
@@ -85,13 +95,13 @@ export async function fetchEstablishmentHours(): Promise<EstablishmentHour[]> {
       .order('weekday', { ascending: true })
       .order('interval_index', { ascending: true }),
     'Carregamento de horários',
-  )
+  ) as SupabaseRow<EstablishmentHour>
 
   if (error) {
     throw error
   }
 
-  return (data ?? []).map((hour) => ({
+  return (data ?? []).map((hour: EstablishmentHour) => ({
     id: hour.id,
     establishment_id: hour.establishment_id,
     weekday: hour.weekday,
@@ -113,13 +123,13 @@ export async function fetchMonthlyAccesses(monthKey: string): Promise<MonthlyAcc
       .eq('month_key', monthKey)
       .order('access_count', { ascending: false }),
     'Carregamento de acessos mensais',
-  )
+  ) as SupabaseRow<MonthlyAccess>
 
   if (error) {
     throw error
   }
 
-  return (data ?? []).map((monthlyAccess) => ({
+  return (data ?? []).map((monthlyAccess: MonthlyAccess) => ({
     id: monthlyAccess.id,
     establishment_id: monthlyAccess.establishment_id,
     month_key: monthlyAccess.month_key,
@@ -158,7 +168,7 @@ export async function incrementMonthlyAccess(
       p_month_key: monthKey,
     }),
     'Registro de acesso mensal',
-  )
+  ) as SupabaseSingleRow<number>
 
   if (error) {
     throw error
