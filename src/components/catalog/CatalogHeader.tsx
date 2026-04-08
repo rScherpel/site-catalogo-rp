@@ -1,12 +1,10 @@
 import { getMonthLabel } from '../../utils/access'
 
 interface CatalogHeaderProps {
-  visibleCount: number
-  totalCount: number
   monthKey: string
 }
 
-export function CatalogHeader({ visibleCount, totalCount, monthKey }: CatalogHeaderProps) {
+export function CatalogHeader({ monthKey }: CatalogHeaderProps) {
   return (
     <header className="catalog-hero">
       <div className="catalog-hero__eyebrow">O CATÁLOGO DA SUA CIDADE</div>
@@ -19,8 +17,6 @@ export function CatalogHeader({ visibleCount, totalCount, monthKey }: CatalogHea
       </div>
 
       <div className="catalog-hero__meta">
-        <span className="catalog-chip catalog-chip--accent">{visibleCount} resultados</span>
-        <span className="catalog-chip">{totalCount} ativos</span>
         <span className="catalog-chip">{getMonthLabel(monthKey)}</span>
       </div>
     </header>

@@ -44,9 +44,10 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
   const mapsUrl = establishment.virtual_store ? '' : buildMapsUrl(establishment.maps_url, establishment.address)
   const addressText = establishment.virtual_store ? 'Loja virtual' : establishment.address
   const phoneDigits = normalizePhoneNumber(establishment.phone)
+  const cardClassName = `establishment-card${status === 'closed' ? ' establishment-card--closed' : ''}`
 
   return (
-    <article className="establishment-card">
+    <article className={cardClassName}>
       <div className="establishment-card__top">
         <div className="establishment-card__logo" aria-hidden="true">
           {!logoFailed && establishment.logo_url ? (
@@ -65,9 +66,9 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
             <div>
               <h2 className="establishment-card__title">{establishment.name}</h2>
               <div className="establishment-card__badges">
-                {establishment.sponsored ? <span className="badge badge--sponsored">Patrocinado</span> : null}
                 <span className={STATUS_CLASSNAMES[status]}>{STATUS_LABELS[status]}</span>
                 <span className="badge badge--category">{establishment.category.label}</span>
+                {establishment.sponsored ? <span className="badge badge--sponsored">Patrocinado</span> : null}
               </div>
             </div>
           </div>

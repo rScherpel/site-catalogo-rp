@@ -9,7 +9,6 @@ import { SortSelector } from '../components/catalog/SortSelector'
 import { StatusFilter } from '../components/catalog/StatusFilter'
 import { useCatalogData } from '../hooks/useCatalogData'
 import type { CatalogFilters } from '../types/catalog'
-import { getMonthLabel } from '../utils/access'
 import { filterEstablishments, sortEstablishments } from '../utils/catalog'
 
 export function CatalogPage() {
@@ -37,6 +36,17 @@ export function CatalogPage() {
     return counts
   }, {})
 
+  const sortedCategories = [...(catalogData?.categories ?? [])].sort((left, right) => {
+    const rightCount = categoryCounts[right.slug] ?? 0
+    const leftCount = categoryCounts[left.slug] ?? 0
+
+    if (rightCount !== leftCount) {
+      return rightCount - leftCount
+    }
+
+    return left.label.localeCompare(right.label, 'pt-BR')
+  })
+
   const handleResetFilters = (): void => {
     setSearch('')
     setCategorySlug('all')
@@ -50,8 +60,6 @@ export function CatalogPage() {
     <div className="catalog-page">
       <main className="catalog-shell">
         <CatalogHeader
-          visibleCount={visibleEntries.length}
-          totalCount={entries.length}
           monthKey={monthKey}
         />
 
@@ -59,7 +67,7 @@ export function CatalogPage() {
           <SearchBar value={search} onChange={setSearch} onClear={() => setSearch('')} />
 
           <CategoryFilter
-            categories={catalogData?.categories ?? []}
+            categories={sortedCategories}
             activeSlug={categorySlug}
             countsBySlug={categoryCounts}
             totalCount={entries.length}
@@ -79,10 +87,6 @@ export function CatalogPage() {
         </section>
 
         <section className="catalog-results" aria-label="Resultados do catálogo">
-          <p className="catalog-results__summary">
-            {visibleEntries.length} resultados encontrados em {getMonthLabel(monthKey)}
-          </p>
-
           {loading ? (
             <LoadingState cardsCount={6} />
           ) : error ? (
