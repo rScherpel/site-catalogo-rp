@@ -1,114 +1,29 @@
-import { mockCatalogData } from '../data/mockCatalog'
 import { supabase, hasSupabaseConfig } from '../lib/supabaseClient'
 import type { Category, CatalogData, Establishment, EstablishmentHour, MonthlyAccess } from '../types/catalog'
 import { getMonthKey } from '../utils/access'
 
-const DEMO_STORAGE_PREFIX = 'site-catalogo-rp:demo-accesses'
+const REQUEST_TIMEOUT_MS = 12000
 
-function cloneCategory(category: Category): Category {
-  return { ...category }
-}
-
-function cloneEstablishment(establishment: Establishment): Establishment {
-  return {
-    ...establishment,
-    keywords: [...establishment.keywords],
-  }
-}
-
-function cloneHour(hour: EstablishmentHour): EstablishmentHour {
-  return { ...hour }
-}
-
-function cloneMonthlyAccess(monthlyAccess: MonthlyAccess): MonthlyAccess {
-  return { ...monthlyAccess }
-}
-
-function readDemoStore(monthKey: string): Record<string, number> {
-  if (typeof window === 'undefined') {
-    return {}
-  }
-
-  const storageKey = `${DEMO_STORAGE_PREFIX}:${monthKey}`
-
-  try {
-    const raw = window.localStorage.getItem(storageKey)
-
-    if (!raw) {
-      return {}
-    }
-
-    const parsed = JSON.parse(raw) as unknown
-
-    if (!parsed || typeof parsed !== 'object') {
-      return {}
-    }
-
-    return Object.fromEntries(
-      Object.entries(parsed as Record<string, unknown>).flatMap(([establishmentId, count]) => {
-        if (typeof count !== 'number' || Number.isNaN(count)) {
-          return []
-        }
-
-        return [[establishmentId, count]]
-      }),
-    )
-  } catch {
-    return {}
-  }
-}
-
-function writeDemoStore(monthKey: string, store: Record<string, number>): void {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  const storageKey = `${DEMO_STORAGE_PREFIX}:${monthKey}`
-  window.localStorage.setItem(storageKey, JSON.stringify(store))
-}
-
-function getDemoBaseCount(monthKey: string, establishmentId: string): number {
-  return (
-    mockCatalogData.monthlyAccesses.find(
-      (monthlyAccess) =>
-        monthlyAccess.month_key === monthKey && monthlyAccess.establishment_id === establishmentId,
-    )?.access_count ?? 0
-  )
-}
-
-function buildDemoMonthlyAccesses(monthKey: string): MonthlyAccess[] {
-  const baseRows = mockCatalogData.monthlyAccesses
-    .filter((monthlyAccess) => monthlyAccess.month_key === monthKey)
-    .map(cloneMonthlyAccess)
-  const store = readDemoStore(monthKey)
-  const rowsByEstablishment = new Map(baseRows.map((monthlyAccess) => [monthlyAccess.establishment_id, monthlyAccess]))
-
-  for (const [establishmentId, increment] of Object.entries(store)) {
-    const existingRow = rowsByEstablishment.get(establishmentId)
-
-    if (existingRow) {
-      existingRow.access_count += increment
-      continue
-    }
-
-    rowsByEstablishment.set(establishmentId, {
-      id: `demo-${establishmentId}-${monthKey}`,
-      establishment_id: establishmentId,
-      month_key: monthKey,
-      access_count: increment,
-      updated_at: new Date().toISOString(),
-    })
-  }
-
-  return [...rowsByEstablishment.values()]
+function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      globalThis.setTimeout(() => {
+        reject(new Error(`${label} demorou demais para responder.`))
+      }, REQUEST_TIMEOUT_MS)
+    }),
+  ])
 }
 
 export async function fetchCategories(): Promise<Category[]> {
   if (!hasSupabaseConfig || !supabase) {
-    return mockCatalogData.categories.map(cloneCategory)
+    throw new Error('Supabase não configurado.')
   }
 
-  const { data, error } = await supabase.from('categories').select('*').order('label', { ascending: true })
+  const { data, error } = await withTimeout(
+    supabase.from('categories').select('*').order('label', { ascending: true }),
+    'Carregamento de categorias',
+  )
 
   if (error) {
     throw error
@@ -124,14 +39,17 @@ export async function fetchCategories(): Promise<Category[]> {
 
 export async function fetchEstablishments(): Promise<Establishment[]> {
   if (!hasSupabaseConfig || !supabase) {
-    return mockCatalogData.establishments.map(cloneEstablishment)
+    throw new Error('Supabase não configurado.')
   }
 
-  const { data, error } = await supabase
-    .from('establishments')
-    .select('*')
-    .eq('active', true)
-    .order('name', { ascending: true })
+  const { data, error } = await withTimeout(
+    supabase
+      .from('establishments')
+      .select('*')
+      .eq('active', true)
+      .order('name', { ascending: true }),
+    'Carregamento de estabelecimentos',
+  )
 
   if (error) {
     throw error
@@ -157,14 +75,17 @@ export async function fetchEstablishments(): Promise<Establishment[]> {
 
 export async function fetchEstablishmentHours(): Promise<EstablishmentHour[]> {
   if (!hasSupabaseConfig || !supabase) {
-    return mockCatalogData.hours.map(cloneHour)
+    throw new Error('Supabase não configurado.')
   }
 
-  const { data, error } = await supabase
-    .from('establishment_hours')
-    .select('*')
-    .order('weekday', { ascending: true })
-    .order('interval_index', { ascending: true })
+  const { data, error } = await withTimeout(
+    supabase
+      .from('establishment_hours')
+      .select('*')
+      .order('weekday', { ascending: true })
+      .order('interval_index', { ascending: true }),
+    'Carregamento de horários',
+  )
 
   if (error) {
     throw error
@@ -182,14 +103,17 @@ export async function fetchEstablishmentHours(): Promise<EstablishmentHour[]> {
 
 export async function fetchMonthlyAccesses(monthKey: string): Promise<MonthlyAccess[]> {
   if (!hasSupabaseConfig || !supabase) {
-    return buildDemoMonthlyAccesses(monthKey)
+    throw new Error('Supabase não configurado.')
   }
 
-  const { data, error } = await supabase
-    .from('monthly_accesses')
-    .select('*')
-    .eq('month_key', monthKey)
-    .order('access_count', { ascending: false })
+  const { data, error } = await withTimeout(
+    supabase
+      .from('monthly_accesses')
+      .select('*')
+      .eq('month_key', monthKey)
+      .order('access_count', { ascending: false }),
+    'Carregamento de acessos mensais',
+  )
 
   if (error) {
     throw error
@@ -225,17 +149,16 @@ export async function incrementMonthlyAccess(
   monthKey = getMonthKey(),
 ): Promise<number> {
   if (!hasSupabaseConfig || !supabase) {
-    const store = readDemoStore(monthKey)
-    store[establishmentId] = (store[establishmentId] ?? 0) + 1
-    writeDemoStore(monthKey, store)
-
-    return getDemoBaseCount(monthKey, establishmentId) + store[establishmentId]
+    throw new Error('Supabase não configurado.')
   }
 
-  const { data, error } = await supabase.rpc('increment_monthly_access', {
-    p_establishment_id: establishmentId,
-    p_month_key: monthKey,
-  })
+  const { data, error } = await withTimeout(
+    supabase.rpc('increment_monthly_access', {
+      p_establishment_id: establishmentId,
+      p_month_key: monthKey,
+    }),
+    'Registro de acesso mensal',
+  )
 
   if (error) {
     throw error

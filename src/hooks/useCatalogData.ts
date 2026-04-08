@@ -13,7 +13,6 @@ export interface UseCatalogDataResult {
   refresh: () => Promise<void>
   trackAccess: (establishmentId: string) => Promise<void>
   monthKey: string
-  isDemoMode: boolean
 }
 
 function upsertMonthlyAccess(
@@ -77,6 +76,8 @@ export function useCatalogData(): UseCatalogDataResult {
         applyCatalogData(data)
       } catch (loadError) {
         if (!cancelled) {
+          setCatalogData(null)
+          setEntries([])
           setError(loadError instanceof Error ? loadError.message : 'Não foi possível carregar o catálogo.')
         }
       } finally {
@@ -101,6 +102,8 @@ export function useCatalogData(): UseCatalogDataResult {
       const data = await fetchCatalogData(monthKey)
       applyCatalogData(data)
     } catch (loadError) {
+      setCatalogData(null)
+      setEntries([])
       setError(loadError instanceof Error ? loadError.message : 'Não foi possível carregar o catálogo.')
     } finally {
       setLoading(false)
@@ -156,6 +159,5 @@ export function useCatalogData(): UseCatalogDataResult {
     refresh,
     trackAccess,
     monthKey,
-    isDemoMode: !hasSupabaseConfig,
   }
 }

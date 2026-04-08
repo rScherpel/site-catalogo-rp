@@ -1,7 +1,7 @@
-import { CatalogPage } from './pages/CatalogPage'
+import { AppRouter } from './routes/AppRouter'
 
 function App() {
-  return <CatalogPage />
+  return <AppRouter />
 }
 
 export default App

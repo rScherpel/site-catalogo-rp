@@ -4,10 +4,9 @@ interface CatalogHeaderProps {
   visibleCount: number
   totalCount: number
   monthKey: string
-  isDemoMode: boolean
 }
 
-export function CatalogHeader({ visibleCount, totalCount, monthKey, isDemoMode }: CatalogHeaderProps) {
+export function CatalogHeader({ visibleCount, totalCount, monthKey }: CatalogHeaderProps) {
   return (
     <header className="catalog-hero">
       <div className="catalog-hero__eyebrow">Catálogo local da cidade</div>
@@ -24,9 +23,6 @@ export function CatalogHeader({ visibleCount, totalCount, monthKey, isDemoMode }
         <span className="catalog-chip catalog-chip--accent">{visibleCount} resultados</span>
         <span className="catalog-chip">{totalCount} ativos</span>
         <span className="catalog-chip">{getMonthLabel(monthKey)}</span>
-        <span className={isDemoMode ? 'catalog-chip catalog-chip--warning' : 'catalog-chip catalog-chip--success'}>
-          {isDemoMode ? 'Modo demonstração local' : 'Supabase conectado'}
-        </span>
       </div>
     </header>
   )

@@ -18,7 +18,8 @@ export function CatalogPage() {
   const [status, setStatus] = useState<CatalogFilters['status']>('all')
   const [sortBy, setSortBy] = useState<CatalogFilters['sortBy']>('name')
 
-  const { catalogData, entries, loading, error, refresh, trackAccess, monthKey, isDemoMode } = useCatalogData()
+  const { catalogData, entries, loading, error, refresh, trackAccess, monthKey } = useCatalogData()
+  const databaseStatusLabel = loading ? 'Verificando banco' : error ? 'Banco offline' : 'Banco online'
 
   const now = new Date()
   const filters: CatalogFilters = {
@@ -52,7 +53,6 @@ export function CatalogPage() {
           visibleCount={visibleEntries.length}
           totalCount={entries.length}
           monthKey={monthKey}
-          isDemoMode={isDemoMode}
         />
 
         <section className="catalog-toolbar" aria-label="Busca e filtros do catálogo">
@@ -113,6 +113,14 @@ export function CatalogPage() {
             </div>
           )}
         </section>
+
+        <footer className="catalog-footer" aria-label="Status do banco de dados">
+          <span className={error ? 'catalog-footer__status catalog-footer__status--offline' : 'catalog-footer__status catalog-footer__status--online'}>
+            {databaseStatusLabel}
+          </span>
+
+          {error ? <p className="catalog-footer__message">{error}</p> : <p className="catalog-footer__message">Dados vindos do Supabase.</p>}
+        </footer>
       </main>
     </div>
   )
