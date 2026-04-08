@@ -53,6 +53,26 @@ export function normalizeExternalUrl(value: string): string {
   return `https://${trimmed.replace(/^\/+/, '')}`
 }
 
+export function normalizeImageUrl(value: string): string {
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return ''
+  }
+
+  const driveFileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)\//i)
+  if (driveFileMatch?.[1]) {
+    return `https://drive.google.com/uc?export=view&id=${driveFileMatch[1]}`
+  }
+
+  const driveOpenMatch = trimmed.match(/[?&]id=([^&]+)/i)
+  if (trimmed.includes('drive.google.com') && driveOpenMatch?.[1]) {
+    return `https://drive.google.com/uc?export=view&id=${driveOpenMatch[1]}`
+  }
+
+  return trimmed
+}
+
 export function parseKeywordsInput(value: string): string[] {
   return Array.from(
     new Set(
@@ -263,7 +283,7 @@ export function buildEstablishmentPayload(
   return {
     name: values.name.trim(),
     slug: values.slug.trim() || slugify(values.name),
-    logo_url: values.logo_url.trim() || null,
+    logo_url: values.logo_url.trim() ? normalizeImageUrl(values.logo_url) : null,
     phone: normalizePhone(values.phone),
     whatsapp: values.whatsapp.trim() ? normalizeWhatsapp(values.whatsapp) : null,
     instagram_url: values.instagram_url.trim() ? normalizeExternalUrl(values.instagram_url) : null,

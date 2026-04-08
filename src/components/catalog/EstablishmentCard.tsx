@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { CatalogEntry, EstablishmentStatus } from '../../types/catalog'
 import { buildMapsUrl, buildWhatsAppUrl, normalizePhoneNumber } from '../../utils/contact'
 import { formatHoursForDisplay, getEstablishmentStatus } from '../../utils/time'
+import { normalizeImageUrl } from '../../utils/admin'
 
 interface EstablishmentCardProps {
   establishment: CatalogEntry
@@ -52,7 +53,7 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
         <div className="establishment-card__logo" aria-hidden="true">
           {!logoFailed && establishment.logo_url ? (
             <img
-              src={establishment.logo_url}
+              src={normalizeImageUrl(establishment.logo_url)}
               alt=""
               onError={() => setLogoFailed(true)}
             />

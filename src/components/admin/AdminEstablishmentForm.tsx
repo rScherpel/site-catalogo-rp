@@ -139,6 +139,7 @@ export function AdminEstablishmentForm({
             onChange={(event) => setValues((current) => ({ ...current, logo_url: event.target.value }))}
             placeholder="https://..."
           />
+          <small className="admin-field__help">Aceita link público direto ou link do Google Drive.</small>
         </label>
 
         <label className="admin-field">
