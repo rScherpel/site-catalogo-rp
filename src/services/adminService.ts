@@ -45,6 +45,7 @@ function cloneEstablishment(establishment: Establishment): Establishment {
   return {
     ...establishment,
     keywords: [...establishment.keywords],
+    closed_weekdays: [...establishment.closed_weekdays],
   }
 }
 
@@ -152,6 +153,7 @@ export async function fetchAdminLookupData(): Promise<AdminLookupData> {
       primary_category_id: establishment.primary_category_id,
       keywords: establishment.keywords ?? [],
       active: establishment.active,
+      closed_weekdays: establishment.closed_weekdays ?? [],
       created_at: establishment.created_at,
       updated_at: establishment.updated_at,
     })),
@@ -253,6 +255,7 @@ export async function createEstablishment(payload: AdminEstablishmentUpsertPaylo
       primary_category_id: payload.primary_category_id,
       keywords: payload.keywords,
       active: payload.active,
+      closed_weekdays: payload.closed_weekdays,
     })
     .select('*')
     .single()
@@ -274,6 +277,7 @@ export async function createEstablishment(payload: AdminEstablishmentUpsertPaylo
     primary_category_id: data.primary_category_id,
     keywords: data.keywords ?? [],
     active: data.active,
+    closed_weekdays: data.closed_weekdays ?? [],
     created_at: data.created_at,
     updated_at: data.updated_at,
   }
@@ -298,6 +302,7 @@ export async function updateEstablishment(
       active: payload.active,
       primary_category_id: payload.primary_category_id,
       keywords: payload.keywords,
+      closed_weekdays: payload.closed_weekdays,
     })
     .eq('id', id)
     .select('*')
@@ -320,6 +325,7 @@ export async function updateEstablishment(
     primary_category_id: data.primary_category_id,
     keywords: data.keywords ?? [],
     active: data.active,
+    closed_weekdays: data.closed_weekdays ?? [],
     created_at: data.created_at,
     updated_at: data.updated_at,
   }

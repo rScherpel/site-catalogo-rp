@@ -149,7 +149,7 @@ export function filterEstablishments(
       return false
     }
 
-    const status = getEstablishmentStatus(entry.hours, now)
+    const status = getEstablishmentStatus(entry.hours, entry.closed_weekdays, now)
 
     if (filters.status !== 'all' && status !== filters.status) {
       return false
@@ -172,7 +172,7 @@ export function sortEstablishments(
   const searchScoreMap = search
     ? new Map(entries.map((entry) => [entry.id, getSearchScore(entry, search)]))
     : null
-  const statusMap = new Map(entries.map((entry) => [entry.id, getEstablishmentStatus(entry.hours, now)]))
+  const statusMap = new Map(entries.map((entry) => [entry.id, getEstablishmentStatus(entry.hours, entry.closed_weekdays, now)]))
 
   return [...entries].sort((left, right) => {
     if (search && searchScoreMap) {

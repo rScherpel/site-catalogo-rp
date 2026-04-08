@@ -60,9 +60,14 @@ export function hasAnyHoursConfigured(hours: EstablishmentHour[]): boolean {
 
 export function getEstablishmentStatus(
   hours: EstablishmentHour[],
+  closedWeekdays: Weekday[] = [],
   now = new Date(),
 ): EstablishmentStatus {
   const today = getCurrentWeekday(now)
+  if (closedWeekdays.includes(today)) {
+    return 'closed'
+  }
+
   const todaysHours = hours.filter((hour) => hour.weekday === today)
 
   if (todaysHours.length === 0) {
@@ -85,20 +90,21 @@ export function getEstablishmentStatus(
   return isOpenNow ? 'open' : 'closed'
 }
 
-function getDayRangeLabel(startDay: Weekday, endDay: Weekday): string {
-  if (startDay === endDay) {
-    return WEEKDAY_LABELS[startDay]
-  }
-
-  return `${WEEKDAY_LABELS[startDay]}-${WEEKDAY_LABELS[endDay]}`
-}
-
 function formatIntervalList(hours: EstablishmentHour[]): string {
-  return hours.map(({ open_time: openTime, close_time: closeTime }) => `${openTime}-${closeTime}`).join(' / ')
+  return hours
+    .map(({ open_time: openTime, close_time: closeTime }) => `${formatTimeForDisplay(openTime)} - ${formatTimeForDisplay(closeTime)}`)
+    .join(' / ')
 }
 
-export function formatHoursForDisplay(hours: EstablishmentHour[]): string {
-  if (!hours.length) {
+function formatTimeForDisplay(value: string): string {
+  const [hours = '00', minutes = '00'] = value.split(':')
+  return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`
+}
+
+export function formatHoursForDisplay(hours: EstablishmentHour[], closedWeekdays: Weekday[] = []): string {
+  const closedWeekdaySet = new Set(closedWeekdays)
+
+  if (!hours.length && closedWeekdaySet.size === 0) {
     return 'Não informado'
   }
 
@@ -118,7 +124,11 @@ export function formatHoursForDisplay(hours: EstablishmentHour[]): string {
 
   for (let weekday = 0 as Weekday; weekday <= 6; weekday += 1 as Weekday) {
     const dayHours = groupedByWeekday.get(weekday) ?? []
-    const signature = dayHours.length ? formatIntervalList(dayHours) : 'não informado'
+    const signature = closedWeekdaySet.has(weekday)
+      ? 'Fechado'
+      : dayHours.length > 0
+        ? formatIntervalList(dayHours)
+        : 'Não informado'
 
     if (currentSignature === null) {
       currentStartDay = weekday
@@ -133,7 +143,11 @@ export function formatHoursForDisplay(hours: EstablishmentHour[]): string {
     }
 
     if (currentStartDay !== null && currentEndDay !== null && currentSignature !== null) {
-      segments.push(`${getDayRangeLabel(currentStartDay, currentEndDay)} ${currentSignature}`)
+      const dayLabel = currentStartDay === currentEndDay
+        ? WEEKDAY_LABELS[currentStartDay]
+        : `${WEEKDAY_LABELS[currentStartDay]}-${WEEKDAY_LABELS[currentEndDay]}`
+
+      segments.push(`${dayLabel} ${currentSignature}`)
     }
 
     currentStartDay = weekday
@@ -142,7 +156,11 @@ export function formatHoursForDisplay(hours: EstablishmentHour[]): string {
   }
 
   if (currentStartDay !== null && currentEndDay !== null && currentSignature !== null) {
-    segments.push(`${getDayRangeLabel(currentStartDay, currentEndDay)} ${currentSignature}`)
+    const dayLabel = currentStartDay === currentEndDay
+      ? WEEKDAY_LABELS[currentStartDay]
+      : `${WEEKDAY_LABELS[currentStartDay]}-${WEEKDAY_LABELS[currentEndDay]}`
+
+    segments.push(`${dayLabel} ${currentSignature}`)
   }
 
   return segments.join(' · ')

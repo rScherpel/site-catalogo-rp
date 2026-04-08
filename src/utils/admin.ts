@@ -61,6 +61,7 @@ function createEmptyIntervals(): AdminHoursIntervalFormState[] {
 export function createEmptyHoursFormState(): AdminHoursDayFormState[] {
   return WEEKDAYS.map((weekday) => ({
     weekday,
+    closed: false,
     intervals: createEmptyIntervals(),
   }))
 }
@@ -72,8 +73,12 @@ function cloneInterval(interval: AdminHoursIntervalFormState): AdminHoursInterva
   }
 }
 
-export function mapHoursRowsToFormState(hours: EstablishmentHour[]): AdminHoursDayFormState[] {
+export function mapHoursRowsToFormState(
+  hours: EstablishmentHour[],
+  closedWeekdays: Weekday[] = [],
+): AdminHoursDayFormState[] {
   const grouped = new Map<Weekday, EstablishmentHour[]>()
+  const closedWeekdaySet = new Set(closedWeekdays)
 
   for (const hour of hours) {
     const nextHours = grouped.get(hour.weekday) ?? []
@@ -86,10 +91,13 @@ export function mapHoursRowsToFormState(hours: EstablishmentHour[]): AdminHoursD
 
     return {
       weekday,
-      intervals: dayHours.map((hour) => ({
-        openTime: hour.open_time,
-        closeTime: hour.close_time,
-      })),
+      closed: closedWeekdaySet.has(weekday),
+      intervals: closedWeekdaySet.has(weekday)
+        ? []
+        : dayHours.map((hour) => ({
+            openTime: hour.open_time,
+            closeTime: hour.close_time,
+          })),
     }
   })
 }
@@ -97,16 +105,37 @@ export function mapHoursRowsToFormState(hours: EstablishmentHour[]): AdminHoursD
 export function mapHoursFormStateToRows(
   hours: AdminHoursDayFormState[],
 ): AdminEstablishmentHourInput[] {
-  return hours.flatMap((day) =>
-    day.intervals
+  return hours.flatMap((day) => {
+    if (day.closed) {
+      return []
+    }
+
+    return day.intervals
       .map((interval, intervalIndex) => ({
         weekday: day.weekday,
         interval_index: (intervalIndex + 1) as 1 | 2,
         open_time: interval.openTime,
         close_time: interval.closeTime,
       }))
-      .filter((interval) => interval.open_time.trim() && interval.close_time.trim()),
-  )
+      .filter((interval) => interval.open_time.trim() && interval.close_time.trim())
+  })
+}
+
+export function setDayClosedState(
+  hours: AdminHoursDayFormState[],
+  weekday: Weekday,
+  closed: boolean,
+): AdminHoursDayFormState[] {
+  return hours.map((day) => {
+    if (day.weekday !== weekday) {
+      return day
+    }
+
+    return {
+      ...day,
+      closed,
+    }
+  })
 }
 
 export function addFirstInterval(hours: AdminHoursDayFormState[], weekday: Weekday): AdminHoursDayFormState[] {
@@ -117,6 +146,7 @@ export function addFirstInterval(hours: AdminHoursDayFormState[], weekday: Weekd
 
     return {
       ...day,
+      closed: false,
       intervals: [{ openTime: '', closeTime: '' }],
     }
   })
@@ -138,6 +168,7 @@ export function addSecondInterval(hours: AdminHoursDayFormState[], weekday: Week
 
     return {
       ...day,
+      closed: false,
       intervals,
     }
   })
@@ -174,6 +205,7 @@ export function updateIntervalField(
 
     return {
       ...day,
+      closed: false,
       intervals: day.intervals.map((interval, currentIndex) =>
         currentIndex === intervalIndex ? { ...interval, [field]: value } : interval,
       ),
@@ -197,7 +229,7 @@ export function mapEstablishmentToFormState(
     active: establishment?.active ?? true,
     primary_category_id: establishment?.primary_category_id ?? '',
     keywordsInput: establishment ? serializeKeywordsInput(establishment.keywords) : '',
-    hours: mapHoursRowsToFormState(hours),
+    hours: mapHoursRowsToFormState(hours, establishment?.closed_weekdays ?? []),
   }
 }
 
@@ -208,6 +240,10 @@ export function createEmptyEstablishmentFormState(): AdminEstablishmentFormState
 export function buildEstablishmentPayload(
   values: AdminEstablishmentFormState,
 ): AdminEstablishmentUpsertPayload {
+  const closedWeekdays = values.hours
+    .filter((day) => day.closed)
+    .map((day) => day.weekday)
+
   return {
     name: values.name.trim(),
     slug: values.slug.trim() || slugify(values.name),
@@ -220,6 +256,7 @@ export function buildEstablishmentPayload(
     active: values.active,
     primary_category_id: values.primary_category_id,
     keywords: parseKeywordsInput(values.keywordsInput),
+    closed_weekdays: closedWeekdays,
   }
 }
 
@@ -247,6 +284,7 @@ export function mapCategoryToFormState(category: { label: string; slug: string }
 export function cloneHoursState(hours: AdminHoursDayFormState[]): AdminHoursDayFormState[] {
   return hours.map((day) => ({
     weekday: day.weekday,
+    closed: day.closed,
     intervals: day.intervals.map(cloneInterval),
   }))
 }

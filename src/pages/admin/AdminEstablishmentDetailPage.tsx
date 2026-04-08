@@ -6,7 +6,7 @@ import { LoadingState } from '../../components/admin/LoadingState'
 import { fetchAdminCategories, fetchAdminEstablishmentById, saveEstablishmentHours, updateEstablishment } from '../../services/adminService'
 import type { Category } from '../../types/catalog'
 import type { AdminEstablishmentFormState, AdminEstablishmentRecord } from '../../types/admin'
-import { mapEstablishmentToFormState } from '../../utils/admin'
+import { buildEstablishmentPayload, mapEstablishmentToFormState } from '../../utils/admin'
 
 export function AdminEstablishmentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -76,19 +76,8 @@ export function AdminEstablishmentDetailPage() {
 
     setSaving(true)
     try {
-      await updateEstablishment(id, {
-        name: values.name,
-        slug: values.slug,
-        logo_url: values.logo_url || null,
-        phone: values.phone,
-        whatsapp: values.whatsapp || null,
-        address: values.address,
-        maps_url: values.maps_url || null,
-        sponsored: values.sponsored,
-        active: values.active,
-        primary_category_id: values.primary_category_id,
-        keywords: values.keywordsInput.split(',').map((item) => item.trim()).filter(Boolean),
-      })
+      const payload = buildEstablishmentPayload(values)
+      await updateEstablishment(id, payload)
       await saveEstablishmentHours(id, values.hours)
       const nextRecord = await fetchAdminEstablishmentById(id)
       setRecord(nextRecord)

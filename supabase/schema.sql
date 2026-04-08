@@ -20,9 +20,13 @@ create table if not exists public.establishments (
   primary_category_id uuid not null references public.categories (id) on update cascade on delete restrict,
   keywords text[] not null default '{}'::text[],
   active boolean not null default true,
+  closed_weekdays smallint[] not null default '{}'::smallint[],
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table if exists public.establishments
+  add column if not exists closed_weekdays smallint[] not null default '{}'::smallint[];
 
 create table if not exists public.establishment_hours (
   id uuid primary key default gen_random_uuid(),

@@ -4,7 +4,7 @@ import { AdminEstablishmentForm } from '../../components/admin/AdminEstablishmen
 import { ErrorState } from '../../components/admin/ErrorState'
 import { LoadingState } from '../../components/admin/LoadingState'
 import { fetchAdminCategories, createEstablishment, saveEstablishmentHours } from '../../services/adminService'
-import { createEmptyEstablishmentFormState } from '../../utils/admin'
+import { buildEstablishmentPayload, createEmptyEstablishmentFormState } from '../../utils/admin'
 import type { Category } from '../../types/catalog'
 import type { AdminEstablishmentFormState } from '../../types/admin'
 
@@ -56,22 +56,8 @@ export function AdminEstablishmentNewPage() {
   const handleSubmit = async (values: AdminEstablishmentFormState): Promise<void> => {
     setSaving(true)
     try {
-      const created = await createEstablishment({
-        name: values.name,
-        slug: values.slug,
-        logo_url: values.logo_url || null,
-        phone: values.phone,
-        whatsapp: values.whatsapp || null,
-        address: values.address,
-        maps_url: values.maps_url || null,
-        sponsored: values.sponsored,
-        active: values.active,
-        primary_category_id: values.primary_category_id,
-        keywords: values.keywordsInput
-          .split(',')
-          .map((item) => item.trim())
-          .filter(Boolean),
-      })
+      const payload = buildEstablishmentPayload(values)
+      const created = await createEstablishment(payload)
 
       await saveEstablishmentHours(created.id, values.hours)
       navigate(`/admin/establishments/${created.id}`, { replace: true })

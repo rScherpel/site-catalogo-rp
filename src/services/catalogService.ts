@@ -78,6 +78,7 @@ export async function fetchEstablishments(): Promise<Establishment[]> {
     primary_category_id: establishment.primary_category_id,
     keywords: establishment.keywords ?? [],
     active: establishment.active,
+    closed_weekdays: establishment.closed_weekdays ?? [],
     created_at: establishment.created_at,
     updated_at: establishment.updated_at,
   }))

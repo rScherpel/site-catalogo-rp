@@ -77,6 +77,7 @@ export interface AdminHoursIntervalFormState {
 
 export interface AdminHoursDayFormState {
   weekday: Weekday
+  closed: boolean
   intervals: AdminHoursIntervalFormState[]
 }
 
@@ -112,6 +113,7 @@ export interface AdminEstablishmentUpsertPayload {
   active: boolean
   primary_category_id: string
   keywords: string[]
+  closed_weekdays: Weekday[]
 }
 
 export interface AdminCategoryPayload {

@@ -28,6 +28,7 @@ export interface Establishment {
   primary_category_id: string
   keywords: string[]
   active: boolean
+  closed_weekdays: Weekday[]
   created_at: string
   updated_at: string
 }

@@ -1,5 +1,8 @@
 create extension if not exists pgcrypto;
 
+alter table if exists public.establishments
+  add column if not exists closed_weekdays smallint[] not null default '{}'::smallint[];
+
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text not null,

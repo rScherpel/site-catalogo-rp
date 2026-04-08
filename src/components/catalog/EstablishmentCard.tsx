@@ -36,8 +36,8 @@ function getInitials(name: string): string {
 
 export function EstablishmentCard({ establishment, onTrackAccess, now = new Date() }: EstablishmentCardProps) {
   const [logoFailed, setLogoFailed] = useState(false)
-  const status = getEstablishmentStatus(establishment.hours, now)
-  const hoursText = formatHoursForDisplay(establishment.hours)
+  const status = getEstablishmentStatus(establishment.hours, establishment.closed_weekdays, now)
+  const hoursText = formatHoursForDisplay(establishment.hours, establishment.closed_weekdays)
   const whatsappNumber = establishment.whatsapp ?? establishment.phone
   const whatsappMessage = `Olá! Vi o estabelecimento ${establishment.name} no catálogo da cidade e gostaria de saber mais.`
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber, whatsappMessage)

@@ -389,6 +389,18 @@
   gap: 14px;
 }
 
+.admin-day-card--closed {
+  border: 1px solid rgba(185, 28, 28, 0.16);
+  background: rgba(254, 242, 242, 0.6);
+}
+
+.admin-day-card__status {
+  margin: 0;
+  color: var(--warning);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
 .admin-intervals {
   display: grid;
   gap: 12px;
