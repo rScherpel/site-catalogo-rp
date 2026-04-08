@@ -60,14 +60,16 @@ export function normalizeImageUrl(value: string): string {
     return ''
   }
 
-  const driveFileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)\//i)
-  if (driveFileMatch?.[1]) {
-    return `https://drive.google.com/uc?export=view&id=${driveFileMatch[1]}`
+  if (trimmed.includes('googleusercontent.com')) {
+    return trimmed
   }
 
+  const driveFileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)\//i)
   const driveOpenMatch = trimmed.match(/[?&]id=([^&]+)/i)
-  if (trimmed.includes('drive.google.com') && driveOpenMatch?.[1]) {
-    return `https://drive.google.com/uc?export=view&id=${driveOpenMatch[1]}`
+
+  if (trimmed.includes('drive.google.com') && (driveFileMatch?.[1] || driveOpenMatch?.[1])) {
+    const fileId = driveFileMatch?.[1] ?? driveOpenMatch?.[1]
+    return `https://lh3.googleusercontent.com/d/${fileId}=w1600`
   }
 
   return trimmed
