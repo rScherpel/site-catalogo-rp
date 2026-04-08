@@ -14,8 +14,10 @@ create table if not exists public.establishments (
   logo_url text,
   phone text not null,
   whatsapp text,
+  instagram_url text,
   address text not null,
   maps_url text,
+  virtual_store boolean not null default false,
   sponsored boolean not null default false,
   primary_category_id uuid not null references public.categories (id) on update cascade on delete restrict,
   keywords text[] not null default '{}'::text[],
@@ -26,6 +28,8 @@ create table if not exists public.establishments (
 );
 
 alter table if exists public.establishments
+  add column if not exists instagram_url text,
+  add column if not exists virtual_store boolean not null default false,
   add column if not exists closed_weekdays smallint[] not null default '{}'::smallint[];
 
 create table if not exists public.establishment_hours (

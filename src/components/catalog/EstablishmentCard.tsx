@@ -41,7 +41,8 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
   const whatsappNumber = establishment.whatsapp ?? establishment.phone
   const whatsappMessage = `Olá! Vi o estabelecimento ${establishment.name} no catálogo da cidade e gostaria de saber mais.`
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber, whatsappMessage)
-  const mapsUrl = buildMapsUrl(establishment.maps_url, establishment.address)
+  const mapsUrl = establishment.virtual_store ? '' : buildMapsUrl(establishment.maps_url, establishment.address)
+  const addressText = establishment.virtual_store ? 'Loja virtual' : establishment.address
   const phoneDigits = normalizePhoneNumber(establishment.phone)
 
   return (
@@ -81,7 +82,7 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
 
         <div className="establishment-card__detail">
           <span className="establishment-card__detail-label">Endereço</span>
-          <p className="establishment-card__detail-value">{establishment.address}</p>
+          <p className="establishment-card__detail-value">{addressText}</p>
         </div>
 
         <div className="establishment-card__detail">
@@ -103,9 +104,17 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
           WhatsApp
         </a>
 
-        <a className="action-button action-button--secondary" href={mapsUrl} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
-          Maps
-        </a>
+        {establishment.instagram_url?.trim() ? (
+          <a className="action-button action-button--secondary" href={establishment.instagram_url} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
+            Instagram
+          </a>
+        ) : null}
+
+        {mapsUrl ? (
+          <a className="action-button action-button--secondary" href={mapsUrl} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
+            Maps
+          </a>
+        ) : null}
 
         <a className="action-button action-button--secondary action-button--full" href={`tel:${phoneDigits}`} onClick={() => void onTrackAccess(establishment.id)}>
           Ligar

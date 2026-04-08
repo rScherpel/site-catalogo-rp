@@ -39,6 +39,20 @@ export function normalizeWhatsapp(value: string): string {
   return normalizePhone(value)
 }
 
+export function normalizeExternalUrl(value: string): string {
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return ''
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed
+  }
+
+  return `https://${trimmed.replace(/^\/+/, '')}`
+}
+
 export function parseKeywordsInput(value: string): string[] {
   return Array.from(
     new Set(
@@ -223,8 +237,10 @@ export function mapEstablishmentToFormState(
     logo_url: establishment?.logo_url ?? '',
     phone: establishment?.phone ?? '',
     whatsapp: establishment?.whatsapp ?? '',
-    address: establishment?.address ?? '',
+    instagram_url: establishment?.instagram_url ?? '',
+    address: establishment?.virtual_store ? '' : establishment?.address ?? '',
     maps_url: establishment?.maps_url ?? '',
+    virtual_store: establishment?.virtual_store ?? false,
     sponsored: establishment?.sponsored ?? false,
     active: establishment?.active ?? true,
     primary_category_id: establishment?.primary_category_id ?? '',
@@ -250,8 +266,10 @@ export function buildEstablishmentPayload(
     logo_url: values.logo_url.trim() || null,
     phone: normalizePhone(values.phone),
     whatsapp: values.whatsapp.trim() ? normalizeWhatsapp(values.whatsapp) : null,
-    address: values.address.trim(),
-    maps_url: values.maps_url.trim() || null,
+    instagram_url: values.instagram_url.trim() ? normalizeExternalUrl(values.instagram_url) : null,
+    address: values.virtual_store ? 'Loja virtual' : values.address.trim(),
+    maps_url: values.virtual_store ? null : values.maps_url.trim() || null,
+    virtual_store: values.virtual_store,
     sponsored: values.sponsored,
     active: values.active,
     primary_category_id: values.primary_category_id,

@@ -22,8 +22,10 @@ export interface Establishment {
   logo_url: string | null
   phone: string
   whatsapp: string | null
+  instagram_url: string | null
   address: string
   maps_url: string | null
+  virtual_store: boolean
   sponsored: boolean
   primary_category_id: string
   keywords: string[]

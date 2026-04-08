@@ -1,6 +1,8 @@
 create extension if not exists pgcrypto;
 
 alter table if exists public.establishments
+  add column if not exists instagram_url text,
+  add column if not exists virtual_store boolean not null default false,
   add column if not exists closed_weekdays smallint[] not null default '{}'::smallint[];
 
 create table if not exists public.profiles (

@@ -87,8 +87,10 @@ export interface AdminEstablishmentFormState {
   logo_url: string
   phone: string
   whatsapp: string
+  instagram_url: string
   address: string
   maps_url: string
+  virtual_store: boolean
   sponsored: boolean
   active: boolean
   primary_category_id: string
@@ -107,8 +109,10 @@ export interface AdminEstablishmentUpsertPayload {
   logo_url: string | null
   phone: string
   whatsapp: string | null
+  instagram_url: string | null
   address: string
   maps_url: string | null
+  virtual_store: boolean
   sponsored: boolean
   active: boolean
   primary_category_id: string

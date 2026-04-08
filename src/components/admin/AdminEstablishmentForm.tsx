@@ -50,7 +50,7 @@ export function AdminEstablishmentForm({
       return
     }
 
-    if (!payload.address) {
+    if (!values.virtual_store && !payload.address) {
       setError('Informe o endereço.')
       return
     }
@@ -68,8 +68,10 @@ export function AdminEstablishmentForm({
         logo_url: payload.logo_url ?? '',
         phone: payload.phone,
         whatsapp: payload.whatsapp ?? '',
+        instagram_url: payload.instagram_url ?? '',
         address: payload.address,
         maps_url: payload.maps_url ?? '',
+        virtual_store: payload.virtual_store,
         sponsored: payload.sponsored,
         active: payload.active,
         primary_category_id: payload.primary_category_id,
@@ -160,12 +162,31 @@ export function AdminEstablishmentForm({
         </label>
 
         <label className="admin-field admin-field--wide">
-          <span>Endereço *</span>
+          <span>Instagram URL</span>
+          <input
+            className="admin-input"
+            value={values.instagram_url}
+            onChange={(event) => setValues((current) => ({ ...current, instagram_url: event.target.value }))}
+            placeholder="https://instagram.com/..."
+          />
+        </label>
+
+        <label className="admin-check admin-field--wide">
+          <input
+            type="checkbox"
+            checked={values.virtual_store}
+            onChange={(event) => setValues((current) => ({ ...current, virtual_store: event.target.checked }))}
+          />
+          <span>Loja virtual</span>
+        </label>
+
+        <label className="admin-field admin-field--wide">
+          <span>Endereço</span>
           <input
             className="admin-input"
             value={values.address}
             onChange={(event) => setValues((current) => ({ ...current, address: event.target.value }))}
-            placeholder="Rua, número, bairro"
+            placeholder={values.virtual_store ? 'Não obrigatório para loja virtual' : 'Rua, número, bairro'}
           />
         </label>
 
@@ -175,7 +196,7 @@ export function AdminEstablishmentForm({
             className="admin-input"
             value={values.maps_url}
             onChange={(event) => setValues((current) => ({ ...current, maps_url: event.target.value }))}
-            placeholder="https://maps.google.com/..."
+            placeholder={values.virtual_store ? 'Opcional para loja virtual' : 'https://maps.google.com/...'}
           />
         </label>
 

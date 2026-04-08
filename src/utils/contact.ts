@@ -11,5 +11,9 @@ export function buildMapsUrl(mapsUrl: string | null | undefined, address: string
     return mapsUrl.trim()
   }
 
+  if (!address.trim()) {
+    return ''
+  }
+
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
 }
