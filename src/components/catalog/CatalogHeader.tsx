@@ -9,13 +9,12 @@ interface CatalogHeaderProps {
 export function CatalogHeader({ visibleCount, totalCount, monthKey }: CatalogHeaderProps) {
   return (
     <header className="catalog-hero">
-      <div className="catalog-hero__eyebrow">Catálogo local da cidade</div>
+      <div className="catalog-hero__eyebrow">O CATÁLOGO DA SUA CIDADE</div>
 
       <div className="catalog-hero__copy">
-        <h1 className="catalog-hero__title">Estabelecimentos rápidos, diretos e prontos para ação.</h1>
+        <h1 className="catalog-hero__title">Encontre tudo o que precisa em Rio Paranaíba</h1>
         <p className="catalog-hero__subtitle">
-          A busca sempre prioriza relevância. Patrocinados lideram apenas quando não há texto de busca, e cada
-          card permite abrir WhatsApp, Maps ou ligar sem sair da navegação.
+          Restaurantes, lojas, serviços e muito mais. Explore o que nossa cidade tem a oferecer e apoie o comércio local.
         </p>
       </div>
 
