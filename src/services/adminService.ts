@@ -330,9 +330,9 @@ export async function saveEstablishmentHours(
   hoursPayload: AdminEstablishmentHourInput[] | AdminEstablishmentFormState['hours'],
 ): Promise<void> {
   const client = ensureSupabaseClient()
-  const rows = Array.isArray(hoursPayload) && hoursPayload.length > 0 && 'weekday' in hoursPayload[0]
-    ? (hoursPayload as AdminEstablishmentHourInput[])
-    : mapHoursFormStateToRows(hoursPayload as AdminEstablishmentFormState['hours'])
+  const rows = Array.isArray(hoursPayload) && hoursPayload.length > 0 && 'intervals' in hoursPayload[0]
+    ? mapHoursFormStateToRows(hoursPayload as AdminEstablishmentFormState['hours'])
+    : (hoursPayload as AdminEstablishmentHourInput[])
 
   const { error } = await client.rpc('replace_establishment_hours', {
     p_establishment_id: establishmentId,

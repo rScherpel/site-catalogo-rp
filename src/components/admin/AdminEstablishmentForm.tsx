@@ -60,21 +60,25 @@ export function AdminEstablishmentForm({
       return
     }
 
-    await onSubmit({
-      ...values,
-      name: payload.name,
-      slug: payload.slug,
-      logo_url: payload.logo_url ?? '',
-      phone: payload.phone,
-      whatsapp: payload.whatsapp ?? '',
-      address: payload.address,
-      maps_url: payload.maps_url ?? '',
-      sponsored: payload.sponsored,
-      active: payload.active,
-      primary_category_id: payload.primary_category_id,
-      keywordsInput: parseKeywordsInput(values.keywordsInput).join(', '),
-      hours: values.hours,
-    })
+    try {
+      await onSubmit({
+        ...values,
+        name: payload.name,
+        slug: payload.slug,
+        logo_url: payload.logo_url ?? '',
+        phone: payload.phone,
+        whatsapp: payload.whatsapp ?? '',
+        address: payload.address,
+        maps_url: payload.maps_url ?? '',
+        sponsored: payload.sponsored,
+        active: payload.active,
+        primary_category_id: payload.primary_category_id,
+        keywordsInput: parseKeywordsInput(values.keywordsInput).join(', '),
+        hours: values.hours,
+      })
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Falha ao salvar o estabelecimento.')
+    }
   }
 
   return (

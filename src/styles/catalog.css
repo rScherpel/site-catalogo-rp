@@ -191,14 +191,30 @@
 
 .category-filter {
   display: flex;
+  width: 100%;
+  min-width: 0;
   gap: 10px;
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 4px;
-  scrollbar-width: none;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 118, 110, 0.45) transparent;
 }
 
 .category-filter::-webkit-scrollbar {
-  display: none;
+  height: 8px;
+}
+
+.category-filter::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.category-filter::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.45);
 }
 
 .category-filter__button {
@@ -206,6 +222,8 @@
   align-items: center;
   gap: 8px;
   flex: none;
+  white-space: nowrap;
+  scroll-snap-align: start;
   padding: 10px 14px;
   border: 1px solid var(--line);
   border-radius: 999px;
