@@ -10,7 +10,6 @@ interface AdminEstablishmentFormProps {
   categories: Category[]
   onSubmit: (values: AdminEstablishmentFormState) => Promise<void>
   onBack: () => void
-  onToggleActive?: () => Promise<void>
   busy?: boolean
 }
 
@@ -20,7 +19,6 @@ export function AdminEstablishmentForm({
   categories,
   onSubmit,
   onBack,
-  onToggleActive,
   busy = false,
 }: AdminEstablishmentFormProps) {
   const [values, setValues] = useState<AdminEstablishmentFormState>(() => ({
@@ -88,11 +86,6 @@ export function AdminEstablishmentForm({
         </div>
 
         <div className="admin-row-actions">
-          {onToggleActive ? (
-            <button type="button" className="admin-button admin-button--secondary" onClick={() => void onToggleActive()}>
-              Ativar/Desativar
-            </button>
-          ) : null}
           <button type="button" className="admin-button admin-button--secondary" onClick={onBack}>
             Voltar
           </button>

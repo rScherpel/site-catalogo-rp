@@ -118,8 +118,6 @@ export function CatalogPage() {
           <span className={error ? 'catalog-footer__status catalog-footer__status--offline' : 'catalog-footer__status catalog-footer__status--online'}>
             {databaseStatusLabel}
           </span>
-
-          {error ? <p className="catalog-footer__message">{error}</p> : <p className="catalog-footer__message">Dados vindos do Supabase.</p>}
         </footer>
       </main>
     </div>

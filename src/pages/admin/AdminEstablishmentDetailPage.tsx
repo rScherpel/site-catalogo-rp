@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { AdminEstablishmentForm } from '../../components/admin/AdminEstablishmentForm'
 import { ErrorState } from '../../components/admin/ErrorState'
 import { LoadingState } from '../../components/admin/LoadingState'
-import { fetchAdminCategories, fetchAdminEstablishmentById, saveEstablishmentHours, toggleEstablishmentActive, updateEstablishment } from '../../services/adminService'
+import { fetchAdminCategories, fetchAdminEstablishmentById, saveEstablishmentHours, updateEstablishment } from '../../services/adminService'
 import type { Category } from '../../types/catalog'
 import type { AdminEstablishmentFormState, AdminEstablishmentRecord } from '../../types/admin'
 import { mapEstablishmentToFormState } from '../../utils/admin'
@@ -97,16 +97,6 @@ export function AdminEstablishmentDetailPage() {
     }
   }
 
-  const handleToggleActive = async (): Promise<void> => {
-    if (!id) {
-      return
-    }
-
-    await toggleEstablishmentActive(id, !record.establishment.active)
-    const nextRecord = await fetchAdminEstablishmentById(id)
-    setRecord(nextRecord)
-  }
-
   return (
     <div className="admin-page">
       <AdminEstablishmentForm
@@ -116,7 +106,6 @@ export function AdminEstablishmentDetailPage() {
         categories={categories}
         onSubmit={handleSubmit}
         onBack={() => navigate('/admin/establishments')}
-        onToggleActive={handleToggleActive}
         busy={saving}
       />
     </div>

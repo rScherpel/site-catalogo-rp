@@ -344,15 +344,6 @@ export async function saveEstablishmentHours(
   }
 }
 
-export async function toggleEstablishmentActive(id: string, active: boolean): Promise<void> {
-  const client = ensureSupabaseClient()
-  const { error } = await client.from('establishments').update({ active }).eq('id', id)
-
-  if (error) {
-    throw error
-  }
-}
-
 export async function fetchAdminCategories(): Promise<Category[]> {
   const client = ensureSupabaseClient()
   const { data, error } = await withTimeout(
