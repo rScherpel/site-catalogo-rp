@@ -11,16 +11,4 @@ const supabaseAnonKey =
 
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey)
 
-const authStorage = typeof window !== 'undefined' ? window.sessionStorage : undefined
-
-export const supabase = hasSupabaseConfig
-	? createClient(supabaseUrl, supabaseAnonKey, {
-			auth: {
-				storage: authStorage,
-				storageKey: 'site-catalogo-rp-auth',
-				persistSession: true,
-				autoRefreshToken: true,
-				detectSessionInUrl: true,
-			},
-		})
-	: null
+export const supabase = hasSupabaseConfig ? createClient(supabaseUrl, supabaseAnonKey) : null
