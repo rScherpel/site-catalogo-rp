@@ -5,8 +5,7 @@ import { EmptyState } from '../components/catalog/EmptyState'
 import { EstablishmentCard } from '../components/catalog/EstablishmentCard'
 import { LoadingState } from '../components/catalog/LoadingState'
 import { SearchBar } from '../components/catalog/SearchBar'
-import { SortSelector } from '../components/catalog/SortSelector'
-import { StatusFilter } from '../components/catalog/StatusFilter'
+import { FilterSelector, type CatalogFilterOption } from '../components/catalog/SortSelector'
 import { useCatalogData } from '../hooks/useCatalogData'
 import type { CatalogFilters } from '../types/catalog'
 import { filterEstablishments, sortEstablishments } from '../utils/catalog'
@@ -14,13 +13,14 @@ import { filterEstablishments, sortEstablishments } from '../utils/catalog'
 export function CatalogPage() {
   const [search, setSearch] = useState('')
   const [categorySlug, setCategorySlug] = useState<'all' | string>('all')
-  const [status, setStatus] = useState<CatalogFilters['status']>('all')
-  const [sortBy, setSortBy] = useState<CatalogFilters['sortBy']>('name')
+  const [filterBy, setFilterBy] = useState<CatalogFilterOption>('all')
 
   const { catalogData, entries, loading, error, refresh, trackAccess, monthKey } = useCatalogData()
   const databaseStatusLabel = loading ? 'Verificando banco' : error ? 'Banco offline' : 'Banco online'
 
   const now = new Date()
+  const status = filterBy === 'open' ? 'open' : 'all'
+  const sortBy = filterBy === 'monthly_accesses' ? 'monthly_accesses' : 'name'
   const filters: CatalogFilters = {
     search,
     categorySlug,
@@ -50,11 +50,10 @@ export function CatalogPage() {
   const handleResetFilters = (): void => {
     setSearch('')
     setCategorySlug('all')
-    setStatus('all')
-    setSortBy('name')
+    setFilterBy('all')
   }
 
-  const hasActiveFilters = Boolean(search.trim()) || categorySlug !== 'all' || status !== 'all' || sortBy !== 'name'
+  const hasActiveFilters = Boolean(search.trim()) || categorySlug !== 'all' || filterBy !== 'all'
 
   return (
     <div className="catalog-page">
@@ -75,8 +74,7 @@ export function CatalogPage() {
           />
 
           <div className="filters-row">
-            <StatusFilter value={status} onChange={setStatus} />
-            <SortSelector value={sortBy} onChange={setSortBy} />
+            <FilterSelector value={filterBy} onChange={setFilterBy} />
           </div>
 
           {hasActiveFilters ? (

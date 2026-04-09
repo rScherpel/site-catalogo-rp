@@ -38,12 +38,13 @@ function getInitials(name: string): string {
 export function EstablishmentCard({ establishment, onTrackAccess, now = new Date() }: EstablishmentCardProps) {
   const [logoFailed, setLogoFailed] = useState(false)
   const status = getEstablishmentStatus(establishment.hours, establishment.closed_weekdays, now)
+  const isVirtualStore = establishment.virtual_store
   const hoursText = formatHoursForDisplay(establishment.hours, establishment.closed_weekdays)
   const whatsappNumber = establishment.whatsapp ?? establishment.phone
   const whatsappMessage = `Olá! Vi o estabelecimento ${establishment.name} no catálogo da cidade e gostaria de saber mais.`
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber, whatsappMessage)
-  const mapsUrl = establishment.virtual_store ? '' : buildMapsUrl(establishment.maps_url, establishment.address)
-  const addressText = establishment.virtual_store ? 'Loja virtual' : establishment.address
+  const mapsUrl = isVirtualStore ? '' : buildMapsUrl(establishment.maps_url, establishment.address)
+  const addressText = isVirtualStore ? 'Loja virtual' : establishment.address
   const phoneDigits = normalizePhoneNumber(establishment.phone)
   const cardClassName = `establishment-card${status === 'closed' ? ' establishment-card--closed' : ''}`
 
@@ -102,23 +103,23 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
       </div>
 
       <div className="establishment-card__actions">
-        <a className="action-button action-button--primary" href={whatsappUrl} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
+        <a className="action-button action-button--primary action-button--whatsapp action-button--full" href={whatsappUrl} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
           WhatsApp
         </a>
 
         {establishment.instagram_url?.trim() ? (
-          <a className="action-button action-button--secondary" href={establishment.instagram_url} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
+          <a className="action-button action-button--secondary action-button--instagram" href={establishment.instagram_url} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
             Instagram
           </a>
         ) : null}
 
         {mapsUrl ? (
-          <a className="action-button action-button--secondary" href={mapsUrl} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
+          <a className="action-button action-button--secondary action-button--maps" href={mapsUrl} target="_blank" rel="noreferrer" onClick={() => void onTrackAccess(establishment.id)}>
             Maps
           </a>
         ) : null}
 
-        <a className="action-button action-button--secondary action-button--full" href={`tel:${phoneDigits}`} onClick={() => void onTrackAccess(establishment.id)}>
+        <a className={`action-button action-button--secondary action-button--call${isVirtualStore ? ' action-button--full' : ''}`} href={`tel:${phoneDigits}`} onClick={() => void onTrackAccess(establishment.id)}>
           Ligar
         </a>
       </div>

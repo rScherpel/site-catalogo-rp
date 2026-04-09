@@ -1,25 +1,29 @@
 import type { CatalogSortBy } from '../../types/catalog'
 
-interface SortSelectorProps {
-  value: CatalogSortBy
-  onChange: (sortBy: CatalogSortBy) => void
+export type CatalogFilterOption = 'all' | 'open' | CatalogSortBy
+
+interface FilterSelectorProps {
+  value: CatalogFilterOption
+  onChange: (value: CatalogFilterOption) => void
 }
 
-const SORT_OPTIONS: Array<{ value: CatalogSortBy; label: string }> = [
-  { value: 'name', label: 'Nome' },
+const FILTER_OPTIONS: Array<{ value: CatalogFilterOption; label: string }> = [
+  { value: 'all', label: 'Todos' },
+  { value: 'open', label: 'Apenas abertos' },
+  { value: 'name', label: 'Ordem alfabética' },
   { value: 'monthly_accesses', label: 'Mais acessados no mês' },
 ]
 
-export function SortSelector({ value, onChange }: SortSelectorProps) {
+export function FilterSelector({ value, onChange }: FilterSelectorProps) {
   return (
     <label className="filter-field">
-      <span className="filter-label">Ordenar por</span>
+      <span className="filter-label">Filtrar por</span>
       <select
         className="filter-select"
         value={value}
-        onChange={(event) => onChange(event.target.value as CatalogSortBy)}
+        onChange={(event) => onChange(event.target.value as CatalogFilterOption)}
       >
-        {SORT_OPTIONS.map((option) => (
+        {FILTER_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>

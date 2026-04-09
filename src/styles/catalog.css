@@ -638,6 +638,29 @@
   grid-column: 1 / -1;
 }
 
+@media (min-width: 861px) {
+  .action-button--instagram {
+    order: -1;
+    grid-column: 1 / -1;
+    min-height: 52px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .action-button--call {
+    order: 0;
+  }
+
+  .action-button--maps {
+    order: 1;
+  }
+
+  .action-button--whatsapp {
+    order: 2;
+    grid-column: 1 / -1;
+  }
+}
+
 .catalog-toolbar__reset {
   justify-self: start;
 }
@@ -786,6 +809,13 @@
 
   .action-button--full {
     grid-column: auto;
+  }
+
+  .action-button--instagram,
+  .action-button--whatsapp,
+  .action-button--call,
+  .action-button--maps {
+    order: initial;
   }
 }
 
