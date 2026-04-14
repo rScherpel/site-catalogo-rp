@@ -4,6 +4,7 @@ import {
   addSecondInterval,
   removeInterval,
   setDayClosedState,
+  setTwentyFourHoursState,
   updateIntervalField,
   WEEKDAY_LABELS,
 } from '../../utils/admin'
@@ -17,8 +18,20 @@ export function HoursEditor({ value, onChange }: HoursEditorProps) {
   return (
     <section className="admin-block">
       <div className="admin-form__header">
-        <h3>Horários</h3>
-        <p>Dias sem intervalo configurado ficam como não informado. Use &quot;Não abre&quot; para marcar fechamento explícito.</p>
+        <div>
+          <h3>Horários</h3>
+          <p>Dias sem intervalo configurado ficam como não informado. Use &quot;Não abre&quot; para marcar fechamento explícito.</p>
+        </div>
+
+        <div className="admin-row-actions">
+          <button
+            type="button"
+            className="admin-button admin-button--secondary"
+            onClick={() => onChange(setTwentyFourHoursState(value))}
+          >
+            Preencher 24h
+          </button>
+        </div>
       </div>
 
       <div className="admin-hours-grid">

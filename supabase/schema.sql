@@ -40,8 +40,20 @@ create table if not exists public.establishment_hours (
   open_time time not null,
   close_time time not null,
   constraint establishment_hours_unique unique (establishment_id, weekday, interval_index),
-  constraint establishment_hours_valid_time check (close_time > open_time)
+  constraint establishment_hours_valid_time check (
+    close_time > open_time
+    or (open_time = time '23:59' and close_time = time '00:00')
+  )
 );
+
+alter table if exists public.establishment_hours
+  drop constraint if exists establishment_hours_valid_time;
+
+alter table if exists public.establishment_hours
+  add constraint establishment_hours_valid_time check (
+    close_time > open_time
+    or (open_time = time '23:59' and close_time = time '00:00')
+  );
 
 create table if not exists public.monthly_accesses (
   id uuid primary key default gen_random_uuid(),

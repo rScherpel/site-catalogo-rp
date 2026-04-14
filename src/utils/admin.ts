@@ -109,6 +109,14 @@ function cloneInterval(interval: AdminHoursIntervalFormState): AdminHoursInterva
   }
 }
 
+export function setTwentyFourHoursState(hours: AdminHoursDayFormState[]): AdminHoursDayFormState[] {
+  return hours.map((day) => ({
+    ...day,
+    closed: false,
+    intervals: [{ openTime: '23:59', closeTime: '00:00' }],
+  }))
+}
+
 export function mapHoursRowsToFormState(
   hours: EstablishmentHour[],
   closedWeekdays: Weekday[] = [],

@@ -16,6 +16,10 @@ const STATUS_PRIORITY: Record<EstablishmentStatus, number> = {
   closed: 2,
 }
 
+const WEEKDAYS: Weekday[] = [0, 1, 2, 3, 4, 5, 6]
+const TWENTY_FOUR_HOUR_OPEN_MINUTES = 23 * 60 + 59
+const TWENTY_FOUR_HOUR_CLOSE_MINUTES = 0
+
 export function getCurrentWeekday(now = new Date()): Weekday {
   return now.getDay() as Weekday
 }
@@ -34,6 +38,25 @@ function timeStringToMinutes(value: string): number {
   const minutes = Number(minutesText)
 
   return hours * 60 + minutes
+}
+
+function isTwentyFourHourInterval(openTime: string, closeTime: string): boolean {
+  return (
+    timeStringToMinutes(openTime) === TWENTY_FOUR_HOUR_OPEN_MINUTES &&
+    timeStringToMinutes(closeTime) === TWENTY_FOUR_HOUR_CLOSE_MINUTES
+  )
+}
+
+function isTwentyFourHourSchedule(hours: EstablishmentHour[], closedWeekdays: Weekday[]): boolean {
+  if (closedWeekdays.length > 0) {
+    return false
+  }
+
+  return WEEKDAYS.every((weekday) => {
+    const dayHours = hours.filter((hour) => hour.weekday === weekday)
+
+    return dayHours.length === 1 && isTwentyFourHourInterval(dayHours[0].open_time, dayHours[0].close_time)
+  })
 }
 
 export function sortHoursByDayAndInterval(hours: EstablishmentHour[]): EstablishmentHour[] {
@@ -63,6 +86,10 @@ export function getEstablishmentStatus(
   closedWeekdays: Weekday[] = [],
   now = new Date(),
 ): EstablishmentStatus {
+  if (isTwentyFourHourSchedule(hours, closedWeekdays)) {
+    return 'open'
+  }
+
   const today = getCurrentWeekday(now)
   if (closedWeekdays.includes(today)) {
     return 'closed'
@@ -77,6 +104,10 @@ export function getEstablishmentStatus(
   const currentMinutes = timeStringToMinutes(getCurrentTimeString(now))
 
   const isOpenNow = todaysHours.some(({ open_time: openTime, close_time: closeTime }) => {
+    if (isTwentyFourHourInterval(openTime, closeTime)) {
+      return true
+    }
+
     const openMinutes = timeStringToMinutes(openTime)
     const closeMinutes = timeStringToMinutes(closeTime)
 
@@ -102,6 +133,10 @@ function formatTimeForDisplay(value: string): string {
 }
 
 export function formatHoursForDisplay(hours: EstablishmentHour[], closedWeekdays: Weekday[] = []): string {
+  if (isTwentyFourHourSchedule(hours, closedWeekdays)) {
+    return 'Aberto 24h'
+  }
+
   const closedWeekdaySet = new Set(closedWeekdays)
 
   if (!hours.length && closedWeekdaySet.size === 0) {

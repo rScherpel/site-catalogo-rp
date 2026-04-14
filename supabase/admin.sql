@@ -5,6 +5,15 @@ alter table if exists public.establishments
   add column if not exists virtual_store boolean not null default false,
   add column if not exists closed_weekdays smallint[] not null default '{}'::smallint[];
 
+alter table if exists public.establishment_hours
+  drop constraint if exists establishment_hours_valid_time;
+
+alter table if exists public.establishment_hours
+  add constraint establishment_hours_valid_time check (
+    close_time > open_time
+    or (open_time = time '23:59' and close_time = time '00:00')
+  );
+
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text not null,
