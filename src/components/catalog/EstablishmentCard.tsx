@@ -125,9 +125,6 @@ export function EstablishmentCard({ establishment, onTrackAccess, now = new Date
       </div>
 
       <footer className="establishment-card__footer">
-        <span className="establishment-card__keyword-count">
-          {establishment.keywords.length} palavras-chave
-        </span>
         <span className="establishment-card__access-count">{establishment.monthlyAccessCount} acessos no mês</span>
       </footer>
     </article>
