@@ -18,5 +18,5 @@ export function ProtectedAdminRoute() {
     return <ErrorState message={error} onRetry={() => window.location.reload()} />
   }
 
-  return <Navigate to="/admin/login" replace />
+  return <Navigate to="/admin" replace />
 }

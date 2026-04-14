@@ -1,13 +1,11 @@
-import { useNavigate } from 'react-router-dom'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 
 export function AdminHeader() {
-  const navigate = useNavigate()
   const { profile, signOut } = useAdminAuth()
 
   const handleSignOut = async (): Promise<void> => {
     await signOut()
-    navigate('/admin/login', { replace: true })
+    window.location.replace('/')
   }
 
   return (

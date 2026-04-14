@@ -17,8 +17,7 @@ export function AppRouter() {
       <Routes>
         <Route path="/" element={<CatalogPage />} />
         <Route path="/admin" element={<AdminAuthScope />}>
-          <Route index element={<Navigate to="login" replace />} />
-          <Route path="login" element={<AdminLoginPage />} />
+          <Route index element={<AdminLoginPage />} />
           <Route element={<ProtectedAdminRoute />}>
             <Route element={<AdminLayout />}>
               <Route path="dashboard" element={<AdminDashboardPage />} />

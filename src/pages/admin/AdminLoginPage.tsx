@@ -1,14 +1,20 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 
 export function AdminLoginPage() {
   const navigate = useNavigate()
-  const { loading, signIn, error: authError } = useAdminAuth()
+  const { loading, profile, signIn, error: authError } = useAdminAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    if (!loading && profile) {
+      void navigate('/admin/dashboard', { replace: true })
+    }
+  }, [loading, navigate, profile])
 
   if (loading) {
     return <div className="admin-login"><p>Carregando sessão...</p></div>
