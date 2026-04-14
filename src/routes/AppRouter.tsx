@@ -1,5 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { CatalogPage } from '../pages/CatalogPage'
+import { PrivacyPolicyPage } from '../pages/PrivacyPolicyPage'
+import { ContactsPage } from '../pages/ContactsPage'
+import { AboutUsPage } from '../pages/AboutUsPage'
 import { AdminAuthScope } from '../components/admin/AdminAuthScope'
 import { ProtectedAdminRoute } from '../components/admin/ProtectedAdminRoute'
 import { AdminLayout } from '../components/admin/AdminLayout'
@@ -16,6 +19,10 @@ export function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<CatalogPage />} />
+        <Route path="/politicas-de-privacidade" element={<PrivacyPolicyPage />} />
+        <Route path="/contato" element={<Navigate to="/contatos" replace />} />
+        <Route path="/contatos" element={<ContactsPage />} />
+        <Route path="/sobre-nos" element={<AboutUsPage />} />
         <Route path="/admin" element={<AdminAuthScope />}>
           <Route index element={<AdminLoginPage />} />
           <Route element={<ProtectedAdminRoute />}>

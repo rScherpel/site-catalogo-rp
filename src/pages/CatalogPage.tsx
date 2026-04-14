@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CategoryFilter } from '../components/catalog/CategoryFilter'
 import { CatalogHeader } from '../components/catalog/CatalogHeader'
 import { EmptyState } from '../components/catalog/EmptyState'
@@ -117,9 +118,23 @@ export function CatalogPage() {
         </section>
 
         <footer className="catalog-footer" aria-label="Status do banco de dados">
-          <span className={error ? 'catalog-footer__status catalog-footer__status--offline' : 'catalog-footer__status catalog-footer__status--online'}>
-            {databaseStatusLabel}
-          </span>
+          <div className="catalog-footer__group">
+            <span className={error ? 'catalog-footer__status catalog-footer__status--offline' : 'catalog-footer__status catalog-footer__status--online'}>
+              {databaseStatusLabel}
+            </span>
+
+            <nav className="catalog-footer__links" aria-label="Links institucionais">
+              <Link className="catalog-footer__link" to="/politicas-de-privacidade">
+                Políticas de privacidade
+              </Link>
+              <Link className="catalog-footer__link" to="/contatos">
+                Contatos
+              </Link>
+              <Link className="catalog-footer__link" to="/sobre-nos">
+                Sobre Nós
+              </Link>
+            </nav>
+          </div>
         </footer>
       </main>
     </div>

@@ -54,7 +54,9 @@ npm run dev
 
 - `/` - catálogo público.
 - `/admin` - redireciona para login administrativo.
-- `/admin/login` - login do admin.
+- `/politicas-de-privacidade` - página de políticas de privacidade.
+- `/contatos` - página de contatos.
+- `/sobre-nos` - página sobre nós.
 - `/admin/dashboard` - dashboard administrativo.
 - `/admin/establishments` - listagem de estabelecimentos.
 - `/admin/establishments/new` - criação de estabelecimento.
